@@ -5,8 +5,7 @@ set -e
 COLOR_END='\e[0m'
 COLOR_RED='\e[0;31m' # Red
 COLOR_YEL='\e[0;33m' # Yellow
-# This current directory.
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ) # The current directory
 ROOT_DIR=$(cd "$DIR/../../" && pwd)
 
 REQUIRED_PACKAGES="$DIR/required_packages.txt"
@@ -22,35 +21,34 @@ msg_warning() {
     printf "$COLOR_YEL$@$COLOR_END"
     printf "\n"
 }
-# Check your environment 
-system=$(uname)
 
-if [ "$system" == "Linux" ]; then
-    distro=$(lsb_release -i)
-    if [[ $distro == *"Arch"* ]] || hash pacman 2>/dev/null
+install_packages_arch() {
+    echo "This script install all packages defined in '$REQUIRED_PACKAGES' "
+    echo "You will be asked for your password."
+    sudo pacman -Sy
+    sudo pacman -S --needed $(cat $REQUIRED_PACKAGES | grep -v '#')
+}
+
+# Check your environment 
+system=$OSTYPE
+
+if [ "$system" == "Linux" ]
+then
+    distro=$(cat /etc/os-release | grep '^NAME=' | sed 's/NAME=//' | sed 's/\"//' )
+    if [[ $distro == "Arch Linux" ]] || hash pacman 2>/dev/null
     then
-        echo ""
+        if [[ ! -f "$REQUIRED_PACKAGES" ]]
+        then
+            msg_warning "Required packages file '$REQUIRED_PACKAGES' does not exist or permssion issue.\nPlease check and rerun."
+        else
+            install_packages_arch
+        fi
     else
         msg_warning "Your linux system was not test"
     fi
 else
-    msg_exit "Please run this script on Archlinux.\nIf you're using windows 10, you can also use a docker container containing Archlinux"
+    msg_exit "Please run this script on Archlinux.\nYou can also use a docker container containing Archlinux, even on Windows."
 fi
-
-
-# Check if root
-# Since we need to make sure paths are okay we need to run as normal user he will use ansible
-[[ "$(whoami)" == "root" ]] && msg_exit "Please run as a normal user not root"
-
-# Check python file
-[[ ! -f "$REQUIRED_PACKAGES" ]]  && msg_exit "Required packages file '$REQUIRED_PACKAGES' does not exist or permssion issue.\nPlease check and rerun."
-
-# Install 
-# By default we upgrade all packges to latest. if we need to pin packages use the python_requirements
-echo "This script install all packages defined in '$REQUIRED_PACKAGES' "
-echo "You will be asked for your password."
-sudo pacman -Sy
-sudo pacman -S --needed $(cat $REQUIRED_PACKAGES | grep -v '#')
 
 #Touch vpass
 echo "Touching .vpass"
