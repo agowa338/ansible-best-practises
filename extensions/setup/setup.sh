@@ -9,7 +9,7 @@ COLOR_YEL='\e[0;33m' # Yellow
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ROOT_DIR=$(cd "$DIR/../../" && pwd)
 
-PYTHON_REQUIREMNTS_FILE="$DIR/python_requirements.txt"
+REQUIRED_PACKAGES="$DIR/required_packages.txt"
 
 msg_exit() {
     printf "$COLOR_RED$@$COLOR_END"
@@ -27,12 +27,14 @@ system=$(uname)
 
 if [ "$system" == "Linux" ]; then
     distro=$(lsb_release -i)
-    if [[ $distro == *"Ubuntu"* ]] || [[ $distro == *"Debian"* ]] ;then
-        msg_warning "Your running Debian based linux.\n You might need to install 'sudo apt-get install build-essential python-dev\n."
-        # TODO: check if ubuntu and install build-essential, and python-dev
+    if [[ $distro == *"Arch"* ]] || hash pacman 2>/dev/null
+    then
+        echo ""
     else
         msg_warning "Your linux system was not test"
     fi
+else
+    msg_exit "Please run this script on Archlinux.\nIf you're using windows 10, you can also use a docker container containing Archlinux"
 fi
 
 
@@ -40,27 +42,27 @@ fi
 # Since we need to make sure paths are okay we need to run as normal user he will use ansible
 [[ "$(whoami)" == "root" ]] && msg_exit "Please run as a normal user not root"
 
-# Check python
-[[ -z "$(which python)" ]] && msg_exit "Opps python is not installed or not in your path."
-# Check pip
-[[ -z "$(which pip)" ]] && msg_exit "pip is not installed!\nYou can try'sudo easy_install pip'"
 # Check python file
-[[ ! -f "$PYTHON_REQUIREMNTS_FILE" ]]  && msg_exit "python_requirements '$PYTHON_REQUIREMNTS_FILE' does not exist or permssion issue.\nPlease check and rerun."
+[[ ! -f "$REQUIRED_PACKAGES" ]]  && msg_exit "Required packages file '$REQUIRED_PACKAGES' does not exist or permssion issue.\nPlease check and rerun."
 
 # Install 
 # By default we upgrade all packges to latest. if we need to pin packages use the python_requirements
-echo "This script install python packages defined in '$PYTHON_REQUIREMNTS_FILE' "
-echo "Since we only support global packages installation for now we need root password."
+echo "This script install all packages defined in '$REQUIRED_PACKAGES' "
 echo "You will be asked for your password."
-sudo -H pip install --no-cache-dir  --upgrade --requirement "$PYTHON_REQUIREMNTS_FILE"
-
+sudo pacman -Sy
+sudo pacman -S --needed $(cat $REQUIRED_PACKAGES | grep -v '#')
 
 #Touch vpass
-echo "Touching vpass"
+echo "Touching .vpass"
 if [ -w "$ROOT_DIR" ]
 then
    touch "$ROOT_DIR/.vpass"
 else
-  sudo touch "$ROOT_DIR/.vpass"
+  msg_exit "Cannot touch '$ROOT_DIR/.vpass', check your permissions."
 fi
-exit 0
+
+# Install git-hooks
+$DIR/install_git_hook.sh
+
+# Update external Roles
+$DIR/role_update.sh

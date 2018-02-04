@@ -1,0 +1,7 @@
+pacman_update: true
+pacman_install_state: latest
+pacman_install:
+  - unzip
+  - mosh
+  - htop
+  - openssh

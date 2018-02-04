@@ -1,0 +1,3 @@
+sudo_enabled: yes
+sudo_passwordless: []
+sudo_agent_forwarding: yes

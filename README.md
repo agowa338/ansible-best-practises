@@ -148,3 +148,6 @@ ansible-playbook -i ../development.ini webservers.yml
 
 # License
 MIT License.
+
+# Missing in Documentation
+Add comment about how to add roles, how the git hooks work, what the setup routine does.

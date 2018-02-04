@@ -1,26 +1,12 @@
-- src: git+https://github.com/yetu/ansible-apt.git
-  version: "v0.1.4"
-  name: ansible-apt
-
-- src: git+https://github.com/yetu/ansible-hostname.git
-  version: "v0.1.2"
-  name: ansible-hostname
-
-- src: git+https://github.com/Stouts/Stouts.sudo.git
-  version: "1.0.0"
-
-- src: git+https://github.com/ANXS/openssh.git
-  version: "v1.0.1"
-  name: ANXS.openssh
-
-- src: git+https://github.com/knopki/ansible-locale.git
-  version: "v1.0.3"
-  name: knopki.locale
-
-- src: git+https://github.com/ANXS/postgresql.git
-  version: "v1.1.1"
-  name: ANXS.postgresql
-
-- src: git+https://github.com/AutomationWithAnsible/ansible-nginx.git
-  version: "v1.0.3"
-  name: ansible-nginx
+- src: 'git+https://chaos.expert/agowa338-ansible/ansible-prerequirements.git'
+  version: master
+- src: 'git+https://chaos.expert/agowa338-ansible/ansible-hostname.git'
+  version: master
+- src: 'git+https://chaos.expert/agowa338-ansible/Stouts.sudo.git'
+  version: master
+- src: 'git+https://chaos.expert/agowa338-ansible/openssh.git'
+  version: master
+- src: 'git+https://chaos.expert/agowa338-ansible/ansible-locale.git'
+  version: master
+- src: 'git+https://chaos.expert/agowa338-ansible/ansible-role-pacman.git'
+  version: master

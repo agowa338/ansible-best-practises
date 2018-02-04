@@ -1,0 +1,6 @@
+pacman_install:
+  - unzip
+  - mosh
+  - htop
+  - openssh
+  - htop

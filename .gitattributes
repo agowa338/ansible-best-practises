@@ -1,0 +1,2 @@
+*.vault.* filter=vault diff=vault
+*.vault filter=vault diff=vault

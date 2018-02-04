@@ -1,0 +1,29 @@
+image: base/archlinux
+
+stages:
+  - check
+#  - test
+#  - deploy
+
+before_script:
+  - ./extensions/setup/setup.sh
+
+check:
+  stage: check
+  script:
+    - cd plays
+    - ansible-lint *.yml
+    - echo $ANSIBLE_VAULT_PASSWORD > ../.vpass
+    - ansible-playbook *.yml --vault-password-file ./plays/.vpass --syntax-check -i ./plays/development.ini
+
+#test:
+#  stage: test
+#  script:
+#    # Deploy the role in test environment.
+#    - sudo ./plays/testing-play-examplePlay.sh
+
+#deploy:
+#  stage: deploy
+#  script:
+#    # TODO: Create environment in GitLab for deployment, only master branch
+#    - ./plays/testing-play-examplePlay.sh

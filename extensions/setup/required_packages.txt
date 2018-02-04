@@ -1,0 +1,15 @@
+# Required packages
+python2
+lsb-release
+curl
+git
+
+# Required python packages for ansible
+python2-yaml
+python2-jinja
+python2-httplib2
+python2-boto
+
+# Ansible
+ansible
+ansible-lint
