@@ -32,7 +32,7 @@ install_packages_arch() {
 # Check your environment 
 system=$OSTYPE
 
-if [ "$system" == "Linux" ]
+if [ "$system" == "linux-gnu" ]
 then
     distro=$(cat /etc/os-release | grep '^NAME=' | sed 's/NAME=//' | sed 's/\"//' )
     if [[ $distro == "Arch Linux" ]] || hash pacman 2>/dev/null
