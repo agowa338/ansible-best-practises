@@ -26,12 +26,13 @@ install_packages_arch() {
     echo "This script install all packages defined in '$REQUIRED_PACKAGES' "
     echo "You may be asked for your password."
     if ! which sudo >/dev/null 2>&1
+    then
         echo "You're $(whoami)"
         pacman -Sy
-        pacman -S --needed $(cat $REQUIRED_PACKAGES | grep -v '#')
+        pacman -S --needed --noconfirm $(cat $REQUIRED_PACKAGES | grep -v '#')
     else
         sudo pacman -Sy
-        sudo pacman -S --needed $(cat $REQUIRED_PACKAGES | grep -v '#')
+        sudo pacman -S --needed --noconfirm $(cat $REQUIRED_PACKAGES | grep -v '#')
     fi
 }
 
