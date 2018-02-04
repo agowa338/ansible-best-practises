@@ -24,9 +24,14 @@ msg_warning() {
 
 install_packages_arch() {
     echo "This script install all packages defined in '$REQUIRED_PACKAGES' "
-    echo "You will be asked for your password."
-    sudo pacman -Sy
-    sudo pacman -S --needed $(cat $REQUIRED_PACKAGES | grep -v '#')
+    echo "You may be asked for your password."
+    if ! which sudo >/dev/null 2>&1
+        pacman -Sy
+        pacman -S --needed $(cat $REQUIRED_PACKAGES | grep -v '#')
+    else
+        sudo pacman -Sy
+        sudo pacman -S --needed $(cat $REQUIRED_PACKAGES | grep -v '#')
+    fi
 }
 
 # Check your environment 
