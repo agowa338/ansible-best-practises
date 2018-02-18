@@ -2,9 +2,14 @@
 python2
 lsb-release
 curl
+wget
 git
+ca-certificates
+gzip
+tar
+sudo
 
-# Required python packages for ansible
+# Required python packages
 python2-yaml
 python2-jinja
 python2-httplib2

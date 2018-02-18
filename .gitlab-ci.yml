@@ -1,4 +1,5 @@
-image: base/archlinux
+image: ansible/ansible:default
+#image: base/archlinux
 
 stages:
   - check
@@ -7,14 +8,18 @@ stages:
 
 before_script:
   - ./extensions/setup/setup.sh
+  - echo $ANSIBLE_VAULT_PASSWORD > .vpass
+  - sha256sum .vpass
 
 check:
   stage: check
   script:
     - cd plays
-    - ansible-lint *.yml
-    - echo $ANSIBLE_VAULT_PASSWORD > ../.vpass
-    - ansible-playbook *.yml --vault-password-file ../.vpass --syntax-check -i ../development.ini
+    # ANSIBLE0010: Package installs should not use latest
+    # ANSIBLE0016: Tasks that run when changed should likely be handlers
+    # ANSIBLE0002: Trailing whitespace
+    - ansible-lint *.yml -x ANSIBLE0010,ANSIBLE0016,ANSIBLE0002
+    - ansible-playbook *.yml --vault-password-file ../.vpass --syntax-check -i ../testing.ini
 
 #test:
 #  stage: test

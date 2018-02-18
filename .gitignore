@@ -1,4 +1,2 @@
 .vpass
-roles/external/*
-!roles/external/.gitkeep
 *.retry

@@ -1,0 +1,19 @@
+# Required packages
+python
+lsb-release
+curl
+wget
+git
+ca-certificates
+gzip
+tar
+build-essential
+python-dev
+python-pip
+sudo
+
+# Required python packages
+python-yaml
+python-jinja2
+python-httplib2
+python-boto
