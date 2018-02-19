@@ -1,3 +1,5 @@
+git-lfs
+
 # Ansible
 ansible
 ansible-lint

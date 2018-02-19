@@ -11,6 +11,7 @@ build-essential
 python-dev
 python-pip
 sudo
+apt-transport-https
 
 # Required python packages
 python-yaml

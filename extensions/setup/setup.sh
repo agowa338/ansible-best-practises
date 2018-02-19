@@ -91,8 +91,14 @@ install_packages_deb() {
         then
             echo "You're $(whoami)"
             apt update
+            apt install -yq software-properties-common python-software-properties
+            apt-add-repository -y ppa:git-core/ppa
+            apt update
             apt install -yq $(cat $REQUIRED_PACKAGES_DEB | grep -v '#' | grep -v '^ *$')
         else
+            sudo apt update
+            sudo apt install -yq software-properties-common python-software-properties
+            sudo apt-add-repository -y ppa:git-core/ppa
             sudo apt update
             sudo apt install -yq $(cat $REQUIRED_PACKAGES_DEB | grep -v '#' | grep -v '^ *$')
         fi
@@ -131,5 +137,10 @@ fi
 
 # Install git-hooks
 $DIR/install_git_hook.sh
+
 # Update external Roles
-$DIR/role_update.sh
+# If not running in GitLab CI execute role_update to initialize submodules using ansible galaxy yml file
+if [[ -z "${GITLAB_CI}" ]]
+then
+    $DIR/role_update.sh
+fi
