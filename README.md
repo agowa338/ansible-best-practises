@@ -41,8 +41,9 @@ This is the directory layout of this repository with explanation.
                                            # This file should not be committed into the repository
                                            # therefore this file is ignored by git
     .ssh.vpass                             # SSH Private key for ci pipeline, supplied by GitLab and .gitlab-ci.yml
-                                           # This file is therefore ignored by git
-    .ssh.pub.vpass                         # Associated public key for .ssh.vpass
+                                           # This file is therefore ignored by git, it should not be created in .gitlab-ci
+                                           # Instead view the example inside of .gitlab-ci.yml to use ssh-agent instead
+    .ssh.pub.vpass                         # Associated public key for .ssh.vpass, if .ssh.vpass is required for deployment
     .gitlab-ci.yml                         # GitLab CI Pipeline configuration for automized deployment and unit tests
     .gitmodules                            # Git Submodules file, list of all associated submodules + version
     .gitignore                             # List of files ignored by git.
@@ -61,8 +62,7 @@ This is the directory layout of this repository with explanation.
                                            # where possible use group_vars instead.
     plays/                                 # Contains the playbook and scripts for simplified deployment
         ansible.cfg                        # Ansible.cfg file that holds all ansible config
-        webservers.yml                     # playbook for webserver tier
-        postgresql.yml                     # playbook for postgresql tier
+        play.yml                           # playbook for your infrastructure
         debug-play.sh                      # Warper for stepping through the tasks in the playbook (debugging only)
         play.sh                            # Warper for applying the role (also updates external roles) also used by CI
         testing-play.sh                    # Verbosly applies the role to the hosts specified in testing.ini
@@ -187,9 +187,13 @@ This structure will help you to keep your dependencies in a single place, as wel
 git submodule add -b master ../../ansible-roles-voffice/projectName.git ./roles/external/projectName
 ```
 
-This stran submodule syntax is required in order for gitlab ci to properly clone the repossitory.
-Ansible Galaxy cannot be used, as these repositories are internal.
+This strange submodule syntax is required in order for gitlab ci to properly clone the repossitory.
+It looks like that because we need to provide a relative path instead of an absolute one.
+Infact it depends on the git repository url of this playbook.
+
+Ansible-galaxy may look nice at the first look, but it has some limitations in combination with gitlab and automated deployment.
 Also git submodules give us better versioning (exactly the commit that was tested/checked in is fetched by default).
+This allows for simplified rolback and reexecuting of an older version at a later point in time.
 
 ## 10. Running the Code
 
@@ -215,3 +219,20 @@ echo "PASSWORD" > .vpass
 ## 11. License
 
 MIT License.
+
+## 12. Adopting for your own playbook
+
+You need to change the following after copying this into your new playbook repository:
+
+* `plays/play.sh`: You need to include your hosts ssh public keys (View comments inside there for more details)
+* `development.ini`: Update with your development hosts and hostgroups
+* `production.ini`: Update with your production hosts and hostgroups
+* `test.ini`: Update with your testing hosts and hostgroups
+* `.vpass`: Create this file with a strong and unique passphrase (you don't need to remember it, but you should save it somewhere secury, like inside a password manager)
+* `extensions/setup/required_*`: Add the packages you need on the host that executes your playbook (not the clients), if any
+* `git submodules`: You should fork all referenced gitmodules (also thouse from ansible-galaxy) into your own gitlab instance/space and configure the mirroring feature to mirror the remote/original repository. This protects you from breaking all your playbooks because the maintainer of the role decided to delete the git repository. And also allows you to diverge from the original one and implement your own changes and/or skip changes made in the future (turn off the mirroring feature for this)
+* `group_vars`: Remove the examples and insert your own code
+* `host_vars`: Remove the examples and insert your own code
+* `plays/play.yml`: Write your playbook inside here
+* `roles/internal/common`: Consider moving this into it's own git repository and reference it from all your playbooks as common task (path would become `roles/external/common` of course). You will still have to include the submodules into each project, but that allows simplified change tracking and also enables you to keep your "common" tasks in sync across all your playbooks. If you don't want to have to add another submodule to all your playbooks if you add a new common role, you could also include these roles as submodules of the common role (inside of a `roles` subdirectory). All you need for that to work is add `../roles/external/common/roles` to the `roles_path` attribute inside the `plays/ansible.cfg` (see example there).
+* `*/.gitkeep`: These files can be removed, they are only included because git does not allow empty folders.

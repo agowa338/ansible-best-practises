@@ -1,13 +1,15 @@
-- name: play-examplePlay.yml | Prerequirements for Ansible
+- name: Prerequirements for Ansible
   hosts: examplePlay
   gather_facts: false
   become: true
   roles:
     - role: ansible-prerequirements
       tags: prerequirements
-- name: play-examplePlay.yml | All roles
+- name: All roles
   hosts: examplePlay
   become: true
   roles:
     - role: common
       tags: common
+#   - role: additionalRole
+#     tags: additionalRole

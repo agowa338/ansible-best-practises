@@ -1,34 +1,56 @@
-image: ansible/ansible:default
-#image: base/archlinux
+image: agowa338/ansible:latest
 
 stages:
   - check
 #  - test
 #  - deploy
 
+variables:
+  GIT_STRATEGY: clone
+  GIT_SUBMODULE_STRATEGY: recursive
+
 before_script:
   - ./extensions/setup/setup.sh
   - echo $ANSIBLE_VAULT_PASSWORD > .vpass
   - sha256sum .vpass
+  ## Run ssh-agent (inside the build environment)
+  - eval $(ssh-agent -s)
+  ## Add the SSH key stored in ANSIBLE_DEPLOYMENT_SSH_KEY variable to the agent store
+  ## We're using tr to fix line endings which makes ed25519 keys work
+  ## without extra base64 encoding.
+  ## https://gitlab.com/gitlab-examples/ssh-private-key/issues/1#note_48526556
+  ##
+  # Uncomment the following line, if you need an ssh_private key for connectiong to
+  # the deployment endpoints and provide it as a secret variable inside the gitlab project.
+  #- echo "$ANSIBLE_DEPLOYMENT_SSH_KEY" | tr -d '\r' | ssh-add - > /dev/null
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
 
 check:
   stage: check
   script:
+    - ./extensions/setup/setup.sh
     - cd plays
-    # ANSIBLE0010: Package installs should not use latest
-    # ANSIBLE0016: Tasks that run when changed should likely be handlers
-    # ANSIBLE0002: Trailing whitespace
-    - ansible-lint *.yml -x ANSIBLE0010,ANSIBLE0016,ANSIBLE0002
+    ## Example if you want to skip some ansible-lint checks
+    ## ANSIBLE0010: Package installs should not use latest
+    ## ANSIBLE0016: Tasks that run when changed should likely be handlers
+    ## ANSIBLE0002: Trailing whitespace
+    ##- ansible-lint *.yml -x ANSIBLE0010,ANSIBLE0016,ANSIBLE0002
+    - ansible-lint *.yml
     - ansible-playbook *.yml --vault-password-file ../.vpass --syntax-check -i ../testing.ini
 
 #test:
 #  stage: test
 #  script:
-#    # Deploy the role in test environment.
-#    - sudo ./plays/testing-play-examplePlay.sh
+#    ## Deploy the role in test environment.
+#    - ./plays/testing-play.sh
 
 #deploy:
 #  stage: deploy
 #  script:
-#    # TODO: Create environment in GitLab for deployment, only master branch
-#    - ./plays/testing-play-examplePlay.sh
+#    - ./plays/play.sh
+#  only:
+#    - master
+#  ## Add the following line to require a click inside the webinterface before executing this stage
+#  ## It wount run automatically anymore after that.
+#  #when: manual
