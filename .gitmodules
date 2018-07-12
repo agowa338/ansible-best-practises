@@ -1,0 +1,24 @@
+[submodule "roles/external/ansible-prerequirements"]
+	path = roles/external/ansible-prerequirements
+	url = ../../agowa338-ansible/ansible-prerequirements.git
+	branch = master
+[submodule "roles/external/ansible-hostname"]
+	path = roles/external/ansible-hostname
+	url = ../../agowa338-ansible/ansible-hostname.git
+	branch = master
+[submodule "roles/external/Stouts.sudo"]
+	path = roles/external/Stouts.sudo
+	url = ../../agowa338-ansible/Stouts.sudo.git
+	branch = master
+[submodule "roles/external/openssh"]
+	path = roles/external/openssh
+	url = ../../agowa338-ansible/openssh.git
+	branch = master
+[submodule "roles/external/ansible-locale"]
+	path = roles/external/ansible-locale
+	url = ../../agowa338-ansible/ansible-locale.git
+	branch = master
+[submodule "roles/external/ansible-role-pacman"]
+	path = roles/external/ansible-role-pacman
+	url = ../../agowa338-ansible/ansible-role-pacman.git
+	branch = master

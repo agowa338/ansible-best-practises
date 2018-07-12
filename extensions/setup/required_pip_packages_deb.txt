@@ -1,4 +1,6 @@
+pip
 git-lfs
+pyOpenSSL
 
 # Ansible
 ansible

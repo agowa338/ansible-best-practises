@@ -72,9 +72,12 @@ install_pip_packages_deb() {
         if ! which sudo > /dev/null 2>&1
         then
             echo "You're $(whoami)"
+            rm -rf /usr/lib/python2.7/dist-packages/OpenSSL
+            rm -rf /usr/lib/python2.7/dist-packages/pyOpenSSL-0.15.1.egg-info
             pip install --upgrade $(cat $REQUIRED_PIP_PACKAGES_DEB | grep -v '#' | grep -v '^ *$')
         else
-            sudo apt update
+            sudo rm -rf /usr/lib/python2.7/dist-packages/OpenSSL
+            sudo rm -rf /usr/lib/python2.7/dist-packages/pyOpenSSL-0.15.1.egg-info
             sudo pip install --upgrade $(cat $REQUIRED_PIP_PACKAGES_DEB | grep -v '#' | grep -v '^ *$')
         fi
     fi
